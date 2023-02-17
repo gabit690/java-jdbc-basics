@@ -1,6 +1,8 @@
 package com.gabit.school.models;
 
-public class Teacher {
+import java.util.Date;
+
+public class StudentModel {
 
     private Long id = null;
 
@@ -8,10 +10,13 @@ public class Teacher {
 
     private String lastname;
 
-    public Teacher(Long id, String firstname, String lastname) {
+    private Date birthdate;
+
+    public StudentModel(Long id, String firstname, String lastname, Date birthdate) {
         this.id = id;
         this.firstname = firstname;
         this.lastname = lastname;
+        this.birthdate = birthdate;
     }
 
     public Long getId() {
@@ -38,12 +43,21 @@ public class Teacher {
         this.lastname = lastname;
     }
 
+    public Date getBirthdate() {
+        return birthdate;
+    }
+
+    public void setBirthdate(Date birthdate) {
+        this.birthdate = birthdate;
+    }
+
     @Override
     public String toString() {
-        return "Teacher{" +
+        return "Student{" +
                 "id=" + id +
                 ", firstname='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
+                ", birthdate=" + birthdate +
                 '}';
     }
 }

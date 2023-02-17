@@ -1,6 +1,6 @@
 package com.gabit.school.models;
 
-public class Enrollment {
+public class EnrollmentModel {
 
     private long Student;
 
@@ -10,7 +10,7 @@ public class Enrollment {
 
     private Integer note;
 
-    public Enrollment(long student, long subject, int year, Integer note) {
+    public EnrollmentModel(long student, long subject, int year, Integer note) {
         Student = student;
         Subject = subject;
         this.year = year;

@@ -1,6 +1,6 @@
 package com.gabit.school.models;
 
-public class Subject {
+public class SubjectModel {
 
     private Long id = null;
 
