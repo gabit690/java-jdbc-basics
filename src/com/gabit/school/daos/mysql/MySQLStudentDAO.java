@@ -1,14 +1,43 @@
 package com.gabit.school.daos.mysql;
 
+import com.gabit.school.daos.DAOException;
 import com.gabit.school.daos.StudentDAO;
 import com.gabit.school.models.StudentModel;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class MySQLStudentDAO implements StudentDAO {
-    @Override
-    public void create(StudentModel element) {
 
+    final String insertQuery = "INSERT INTO students(id_student, firstname, lastname, birthdate) VALUES (?, ?, ?, ?, ?)";
+    final String updateQuery = "UPDATE students SET firstname = ?, lastname = ?, birthdate = ? WHERE id_students = ?";
+    final String deleteQuery = "DELETE FROM students WHERE id_student = ?";
+    final String getAllQuery = "SELECT id_students, firstname, lastname, birthdate FROM students";
+    final String getOneQuery = "SELECT id_students, firstname, lastname, birthdate FROM students WHERE id_students = ?";
+
+    private Connection connection;
+
+    public MySQLStudentDAO(Connection connection) {
+        this.connection = connection;
+    }
+
+    @Override
+    public void create(StudentModel element) throws DAOException {
+        try (PreparedStatement statement = this.connection.prepareStatement(insertQuery)) {
+            statement.setLong(1, element.getId());
+            statement.setString(2, element.getFirstname());
+            statement.setString(3, element.getLastname());
+            statement.setDate(4, new Date(element.getBirthdate().getTime()));
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DAOException("Insertion failed");
+            }
+        } catch (SQLException e) {
+        throw new DAOException("Error in SQL", e);
+        }
     }
 
     @Override
@@ -22,12 +51,31 @@ public class MySQLStudentDAO implements StudentDAO {
     }
 
     @Override
-    public void update(StudentModel element) {
-
+    public void update(StudentModel element) throws DAOException {
+        try (PreparedStatement statement = this.connection.prepareStatement(updateQuery)) {
+            statement.setString(1, element.getFirstname());
+            statement.setString(2, element.getLastname());
+            statement.setDate(3, new Date(element.getBirthdate().getTime()));
+            statement.setLong(4, element.getId());
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DAOException("Update failed");
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error in SQL", e);
+        }
     }
 
     @Override
-    public void delete(StudentModel element) {
-
+    public void delete(StudentModel element) throws DAOException {
+        try (PreparedStatement statement = this.connection.prepareStatement(deleteQuery)) {
+            statement.setLong(1, element.getId());
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DAOException("Deletion failed");
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error in SQL", e);
+        }
     }
 }
