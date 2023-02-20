@@ -4,10 +4,7 @@ import com.gabit.school.daos.DAOException;
 import com.gabit.school.daos.StudentDAO;
 import com.gabit.school.models.StudentModel;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 public class MySQLStudentDAO implements StudentDAO {
@@ -18,6 +15,11 @@ public class MySQLStudentDAO implements StudentDAO {
     final String getAllQuery = "SELECT id_students, firstname, lastname, birthdate FROM students";
     final String getOneQuery = "SELECT id_students, firstname, lastname, birthdate FROM students WHERE id_students = ?";
 
+
+
+
+
+
     private Connection connection;
 
     public MySQLStudentDAO(Connection connection) {
@@ -26,7 +28,7 @@ public class MySQLStudentDAO implements StudentDAO {
 
     @Override
     public void create(StudentModel element) throws DAOException {
-        try (PreparedStatement statement = this.connection.prepareStatement(insertQuery)) {
+        try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
             statement.setLong(1, element.getId());
             statement.setString(2, element.getFirstname());
             statement.setString(3, element.getLastname());
@@ -36,13 +38,34 @@ public class MySQLStudentDAO implements StudentDAO {
                 throw new DAOException("Insertion failed");
             }
         } catch (SQLException e) {
-        throw new DAOException("Error in SQL", e);
+            throw new DAOException("Error in SQL", e);
         }
     }
 
+    private StudentModel convert(ResultSet rs) throws SQLException {
+        String firstname = rs.getString("firstname");
+        String lastname = rs.getString("lastname");
+        Date birthdate = rs.getDate("birthdate");
+        StudentModel student = new StudentModel(firstname, lastname, birthdate);
+        student.setId(rs.getLong("id_student"));
+        return student;
+    }
+
+
     @Override
-    public StudentModel readOne(Long id) {
-        return null;
+    public StudentModel readOne(Long id) throws DAOException{
+        try (PreparedStatement statement = connection.prepareStatement(getOneQuery)) {
+            statement.setLong(1, id);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return convert(rs);
+                } else {
+                    throw new DAOException("There is no student with that id");
+                }
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error in SQL", e);
+        }
     }
 
     @Override
@@ -52,7 +75,7 @@ public class MySQLStudentDAO implements StudentDAO {
 
     @Override
     public void update(StudentModel element) throws DAOException {
-        try (PreparedStatement statement = this.connection.prepareStatement(updateQuery)) {
+        try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
             statement.setString(1, element.getFirstname());
             statement.setString(2, element.getLastname());
             statement.setDate(3, new Date(element.getBirthdate().getTime()));
@@ -68,7 +91,7 @@ public class MySQLStudentDAO implements StudentDAO {
 
     @Override
     public void delete(StudentModel element) throws DAOException {
-        try (PreparedStatement statement = this.connection.prepareStatement(deleteQuery)) {
+        try (PreparedStatement statement = connection.prepareStatement(deleteQuery)) {
             statement.setLong(1, element.getId());
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {

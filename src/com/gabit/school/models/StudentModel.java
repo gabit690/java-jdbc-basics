@@ -12,8 +12,7 @@ public class StudentModel {
 
     private Date birthdate;
 
-    public StudentModel(Long id, String firstname, String lastname, Date birthdate) {
-        this.id = id;
+    public StudentModel(String firstname, String lastname, Date birthdate) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.birthdate = birthdate;
