@@ -8,8 +8,7 @@ public class TeacherModel {
 
     private String lastname;
 
-    public TeacherModel(Long id, String firstname, String lastname) {
-        this.id = id;
+    public TeacherModel(String firstname, String lastname) {
         this.firstname = firstname;
         this.lastname = lastname;
     }

@@ -5,11 +5,12 @@ import com.gabit.school.daos.StudentDAO;
 import com.gabit.school.models.StudentModel;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MySQLStudentDAO implements StudentDAO {
 
-    final String insertQuery = "INSERT INTO students(id_student, firstname, lastname, birthdate) VALUES (?, ?, ?, ?, ?)";
+    final String insertQuery = "INSERT INTO students(firstname, lastname, birthdate) VALUES (?, ?, ?)";
     final String updateQuery = "UPDATE students SET firstname = ?, lastname = ?, birthdate = ? WHERE id_students = ?";
     final String deleteQuery = "DELETE FROM students WHERE id_student = ?";
     final String getAllQuery = "SELECT id_students, firstname, lastname, birthdate FROM students";
@@ -28,14 +29,21 @@ public class MySQLStudentDAO implements StudentDAO {
 
     @Override
     public void create(StudentModel element) throws DAOException {
-        try (PreparedStatement statement = connection.prepareStatement(insertQuery)) {
-            statement.setLong(1, element.getId());
-            statement.setString(2, element.getFirstname());
-            statement.setString(3, element.getLastname());
-            statement.setDate(4, new Date(element.getBirthdate().getTime()));
+        try (PreparedStatement statement = connection.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, element.getFirstname());
+            statement.setString(2, element.getLastname());
+            statement.setDate(3, new Date(element.getBirthdate().getTime()));
             int rowsAffected = statement.executeUpdate();
             if (rowsAffected == 0) {
                 throw new DAOException("Insertion failed");
+            }
+            System.out.println("Inserto un nuevo STUDENT");
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    element.setId(rs.getLong(1));
+                } else {
+                    throw new DAOException("It was not possible to assign a new student with this ID.");
+                }
             }
         } catch (SQLException e) {
             throw new DAOException("Error in SQL", e);
@@ -69,8 +77,18 @@ public class MySQLStudentDAO implements StudentDAO {
     }
 
     @Override
-    public List<StudentModel> readAll() {
-        return null;
+    public List<StudentModel> readAll() throws DAOException{
+        try (PreparedStatement statement = connection.prepareStatement(getAllQuery)) {
+            try (ResultSet rs = statement.executeQuery()) {
+                List<StudentModel> students = new ArrayList<>();
+                while (rs.next()) {
+                    students.add(convert(rs));
+                }
+                return students;
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Error in SQL", e);
+        }
     }
 
     @Override
