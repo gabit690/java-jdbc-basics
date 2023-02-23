@@ -2,35 +2,35 @@ package com.gabit.school.models;
 
 public class EnrollmentModel {
 
-    private long Student;
+    private long student;
 
-    private long Subject;
+    private long subject;
 
     private int year;
 
     private Integer note;
 
     public EnrollmentModel(long student, long subject, int year, Integer note) {
-        Student = student;
-        Subject = subject;
+        this.student = student;
+        this.subject = subject;
         this.year = year;
         this.note = note;
     }
 
     public long getStudent() {
-        return Student;
+        return student;
     }
 
     public void setStudent(long student) {
-        Student = student;
+        this.student = student;
     }
 
     public long getSubject() {
-        return Subject;
+        return subject;
     }
 
     public void setSubject(long subject) {
-        Subject = subject;
+        subject = subject;
     }
 
     public int getYear() {
@@ -52,8 +52,8 @@ public class EnrollmentModel {
     @Override
     public String toString() {
         return "Enrollment{" +
-                "Student=" + Student +
-                ", Subject=" + Subject +
+                "Student=" + student +
+                ", Subject=" + subject +
                 ", year=" + year +
                 ", note=" + note +
                 '}';
