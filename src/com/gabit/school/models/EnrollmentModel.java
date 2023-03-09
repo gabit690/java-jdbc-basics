@@ -49,6 +49,10 @@ public class EnrollmentModel {
         this.id = id;
     }
 
+    public EnrollmentModel(long student, long subject, int year) {
+        this.id = new IdEnrollment(student, subject, year);
+    }
+
     public IdEnrollment getId() {
         return id;
     }
